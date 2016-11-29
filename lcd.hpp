@@ -48,7 +48,10 @@ private:
     // now copy the frame buffer to screen
     uint8_t r,c;
     for (r=0;r<ROWS;r++) {
-      cmd((r*64)|0x80); // cursor to start of row
+      uint8_t adr=(r&1)*64; // first two rows
+      if (r>1)
+        adr+=COLUMNS;
+      cmd(adr|0x80);  // cursor to start of row
       for (c=0;c<COLUMNS;c++) {
         data(framebuffer[r*COLUMNS+c]);
       }
@@ -111,7 +114,7 @@ public:
         break;
       default:
         if (cx>=COLUMNS) {
-          if (cy>(ROWS-1))
+          if (cy>=(ROWS-1))
             scrollup();
           else
             cy++;
