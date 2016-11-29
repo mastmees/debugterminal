@@ -101,7 +101,7 @@ public:
         clear();
         break;
       case '\n': // newline moves cursor down, on last line scrolls screen up
-        if (cy>=ROWS)
+        if (cy>=ROWS-1)
           scrollup();
         else
           cursorpos(cx,cy+1);
@@ -110,14 +110,13 @@ public:
         cursorpos(0,cy);
         break;
       default:
-        if (cy>=ROWS) {
-          cy=ROWS-1;
-        }
         if (cx>=COLUMNS) {
-          if (cy>=(ROWS-1))
+          if (cy>(ROWS-1))
             scrollup();
           else
             cy++;
+          if (cy>(ROWS-1))
+            cy=ROWS-1;
           cursorpos(0,cy);
         }
         framebuffer[cy*COLUMNS+cx]=c;
@@ -141,7 +140,10 @@ public:
   void cursorpos(uint8_t x,uint8_t y) {
     cx=x;
     cy=y;
-    cmd((y*64+x)|0x80);
+    uint8_t adr=(y&1)*64+x; // first two rows
+    if (y>1)
+      adr+=COLUMNS;
+    cmd(adr|0x80);
   }
   
   // reset the lcd controller, and set to 4 bit mode
@@ -159,6 +161,6 @@ public:
     clear();
     showcursor=0;
   }
-  
+
 };
 #endif
