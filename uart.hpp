@@ -4,7 +4,7 @@
 
 class UART
 {
-  volatile uint8_t rbuf[8],head,tail,count;
+  volatile uint8_t rbuf[64],head,tail,count;
   
 public:
   UART() : head(0),tail(0),count(0)
