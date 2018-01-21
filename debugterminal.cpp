@@ -114,9 +114,9 @@ int main(void)
   //
   set_sleep_mode(SLEEP_MODE_IDLE);
   sleep_enable();
-  // configure watchdog to interrupt&reset, 4 sec timeout
-  WDTCSR|=0x18;
-  WDTCSR=0xe8;
+  // configure watchdog
+  WDTCSR=(1<<WDE) | (1<<WDCE);
+  WDTCSR=(1<<WDE) | (1<<WDIE) | (1<<WDP2) | (1<<WDP1) | (1<<WDP0) ; // 2sec timout, interrupt+reset
   //
   display.reset();
   display.cursoronoff(1);
@@ -131,7 +131,7 @@ int main(void)
     // in either case reset watchdog, scan keypad, and
     // output received data
     wdt_reset();
-    WDTCSR|=0x40;
+    WDTCSR=(1<<WDIE) | (1<<WDP2) | (1<<WDP1) | (1<<WDP0) ; // 2sec timout, interrupt+reset
     keypad.scan();
     if (keypad.ready() && uart.empty()) {
       uart.send(keypad.getch());
